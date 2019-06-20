@@ -3,11 +3,13 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { ViewPdfComponent } from './view-pdf/view-pdf.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ViewPdfComponent
   ],
   imports: [
     BrowserModule
