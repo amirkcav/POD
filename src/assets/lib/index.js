@@ -1,4 +1,6 @@
-function index(fileName) {
+var RENDER_OPTIONS;
+
+var index =  function(fileName, isFirstRender) {
 
 	/******/ (function(modules) { // webpackBootstrap
 	/******/ 	// The module cache
@@ -68,7 +70,7 @@ function index(fileName) {
 
 		var documentId = fileName;
 		var PAGE_HEIGHT = void 0;
-		var RENDER_OPTIONS = {
+		RENDER_OPTIONS = {
 			documentId: documentId,
 			pdfDocument: null,
 			scale: parseFloat(localStorage.getItem(documentId + '/scale'), 10) || 1.33,
@@ -110,15 +112,16 @@ function index(fileName) {
 
 					var viewport = pdfPage.getViewport(RENDER_OPTIONS.scale, RENDER_OPTIONS.rotate);
 					PAGE_HEIGHT = viewport.height;
-
-					document.getElementById('download-button').addEventListener('click', function() {
-						var rr = 4;
-					});
 					
 				});
 			});
 		}
 		render();
+
+		// the rest of the code is setting the toolbar etc, which is needed only on the first render.
+		if (!isFirstRender) {
+			return;
+		}
 
 		// Text stuff
 		(function () {
@@ -133,9 +136,11 @@ function index(fileName) {
 
 				setText(localStorage.getItem(RENDER_OPTIONS.documentId + '/text/size') || 10, localStorage.getItem(RENDER_OPTIONS.documentId + '/text/color') || '#000000');
 
-				(0, _initColorPicker2.default)(document.querySelector('.text-color'), textColor, function (value) {
-					setText(textSize, value);
-				});
+				if (document.querySelector('.text-color').innerHTML === '') {
+					(0, _initColorPicker2.default)(document.querySelector('.text-color'), textColor, function (value) {
+						setText(textSize, value);
+					});
+				}
 			}
 
 			function setText(size, color) {
@@ -193,9 +198,11 @@ function index(fileName) {
 
 				setPen(localStorage.getItem(RENDER_OPTIONS.documentId + '/pen/size') || 1, localStorage.getItem(RENDER_OPTIONS.documentId + '/pen/color') || '#000000');
 
-				(0, _initColorPicker2.default)(document.querySelector('.pen-color'), penColor, function (value) {
-					setPen(penSize, value);
-				});
+				if (document.querySelector('.pen-color').innerHTML === '') {
+					(0, _initColorPicker2.default)(document.querySelector('.pen-color'), penColor, function (value) {
+						setPen(penSize, value);
+					});
+				}
 			}
 
 			function setPen(size, color) {
@@ -354,7 +361,7 @@ function index(fileName) {
 						document.querySelector('div#pageContainer' + (i + 1) + ' svg.annotationLayer').innerHTML = '';
 					}
 
-					localStorage.removeItem(RENDER_OPTIONS.documentId + '/annotations');
+					localStorage.removeItem('my_annotations');
 				}
 			}
 			document.querySelector('a.clear').addEventListener('click', handleClearClick);
@@ -1980,7 +1987,7 @@ function index(fileName) {
 			* @param {SVGElement} svg The SVG container to get metadata for
 			*/function getMetadata(svg){return{documentId:svg.getAttribute('data-pdf-annotate-document'),pageNumber:parseInt(svg.getAttribute('data-pdf-annotate-page'),10),viewport:JSON.parse(svg.getAttribute('data-pdf-annotate-viewport'))};}/***/},/* 7 *//***/function(module,exports){module.exports=function createStyleSheet(blocks){var style=document.createElement('style');var text=Object.keys(blocks).map(function(selector){return processRuleSet(selector,blocks[selector]);}).join('\n');style.setAttribute('type','text/css');style.appendChild(document.createTextNode(text));return style;};function processRuleSet(selector,block){return selector+' {\n'+processDeclarationBlock(block)+'\n}';}function processDeclarationBlock(block){return Object.keys(block).map(function(prop){return processDeclaration(prop,block[prop]);}).join('\n');}function processDeclaration(prop,value){if(!isNaN(value)&&value!=0){value=value+'px';}return hyphenate(prop)+': '+value+';';}function hyphenate(prop){return prop.replace(/[A-Z]/g,function(match){return'-'+match.toLowerCase();});}/***/},/* 8 *//***/function(module,exports,__webpack_require__){'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _uuid=__webpack_require__(9);var _uuid2=_interopRequireDefault(_uuid);var _StoreAdapter2=__webpack_require__(2);var _StoreAdapter3=_interopRequireDefault(_StoreAdapter2);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&((typeof call==='undefined'?'undefined':_typeof2(call))==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+(typeof superClass==='undefined'?'undefined':_typeof2(superClass)));}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}// StoreAdapter for working with localStorage
 		// This is ideal for testing, examples, and prototyping
-		var LocalStoreAdapter=function(_StoreAdapter){_inherits(LocalStoreAdapter,_StoreAdapter);function LocalStoreAdapter(){_classCallCheck(this,LocalStoreAdapter);return _possibleConstructorReturn(this,Object.getPrototypeOf(LocalStoreAdapter).call(this,{getAnnotations:function getAnnotations(documentId,pageNumber){return new Promise(function(resolve,reject){var annotations=_getAnnotations(documentId).filter(function(i){return i.page===pageNumber&&i.class==='Annotation';});resolve({documentId:documentId,pageNumber:pageNumber,annotations:annotations});});},getAnnotation:function getAnnotation(documentId,annotationId){return Promise.resolve(_getAnnotations(documentId)[findAnnotation(documentId,annotationId)]);},addAnnotation:function addAnnotation(documentId,pageNumber,annotation){return new Promise(function(resolve,reject){annotation.class='Annotation';annotation.uuid=(0,_uuid2.default)();annotation.page=pageNumber;var annotations=_getAnnotations(documentId);annotations.push(annotation);updateAnnotations(documentId,annotations);resolve(annotation);});},editAnnotation:function editAnnotation(documentId,annotationId,annotation){return new Promise(function(resolve,reject){var annotations=_getAnnotations(documentId);annotations[findAnnotation(documentId,annotationId)]=annotation;updateAnnotations(documentId,annotations);resolve(annotation);});},deleteAnnotation:function deleteAnnotation(documentId,annotationId){return new Promise(function(resolve,reject){var index=findAnnotation(documentId,annotationId);if(index>-1){var annotations=_getAnnotations(documentId);annotations.splice(index,1);updateAnnotations(documentId,annotations);}resolve(true);});},getComments:function getComments(documentId,annotationId){return new Promise(function(resolve,reject){resolve(_getAnnotations(documentId).filter(function(i){return i.class==='Comment'&&i.annotation===annotationId;}));});},addComment:function addComment(documentId,annotationId,content){return new Promise(function(resolve,reject){var comment={class:'Comment',uuid:(0,_uuid2.default)(),annotation:annotationId,content:content};var annotations=_getAnnotations(documentId);annotations.push(comment);updateAnnotations(documentId,annotations);resolve(comment);});},deleteComment:function deleteComment(documentId,commentId){return new Promise(function(resolve,reject){_getAnnotations(documentId);var index=-1;var annotations=_getAnnotations(documentId);for(var i=0,l=annotations.length;i<l;i++){if(annotations[i].uuid===commentId){index=i;break;}}if(index>-1){annotations.splice(index,1);updateAnnotations(documentId,annotations);}resolve(true);});}}));}return LocalStoreAdapter;}(_StoreAdapter3.default);exports.default=LocalStoreAdapter;function _getAnnotations(documentId){return JSON.parse(localStorage.getItem(documentId+'/annotations'))||[];}function updateAnnotations(documentId,annotations){localStorage.setItem(documentId+'/annotations',JSON.stringify(annotations));}function findAnnotation(documentId,annotationId){var index=-1;var annotations=_getAnnotations(documentId);for(var i=0,l=annotations.length;i<l;i++){if(annotations[i].uuid===annotationId){index=i;break;}}return index;}module.exports=exports['default'];/***/},/* 9 *//***/function(module,exports){'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.default=uuid;var REGEXP=/[xy]/g;var PATTERN='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';function replacement(c){var r=Math.random()*16|0;var v=c=='x'?r:r&0x3|0x8;return v.toString(16);}/**
+		var LocalStoreAdapter=function(_StoreAdapter){_inherits(LocalStoreAdapter,_StoreAdapter);function LocalStoreAdapter(){_classCallCheck(this,LocalStoreAdapter);return _possibleConstructorReturn(this,Object.getPrototypeOf(LocalStoreAdapter).call(this,{getAnnotations:function getAnnotations(documentId,pageNumber){return new Promise(function(resolve,reject){var annotations=_getAnnotations(documentId).filter(function(i){return i.page===pageNumber&&i.class==='Annotation';});resolve({documentId:documentId,pageNumber:pageNumber,annotations:annotations});});},getAnnotation:function getAnnotation(documentId,annotationId){return Promise.resolve(_getAnnotations(documentId)[findAnnotation(documentId,annotationId)]);},addAnnotation:function addAnnotation(documentId,pageNumber,annotation){return new Promise(function(resolve,reject){annotation.class='Annotation';annotation.uuid=(0,_uuid2.default)();annotation.page=pageNumber;var annotations=_getAnnotations(documentId);annotations.push(annotation);updateAnnotations(documentId,annotations);resolve(annotation);});},editAnnotation:function editAnnotation(documentId,annotationId,annotation){return new Promise(function(resolve,reject){var annotations=_getAnnotations(documentId);annotations[findAnnotation(documentId,annotationId)]=annotation;updateAnnotations(documentId,annotations);resolve(annotation);});},deleteAnnotation:function deleteAnnotation(documentId,annotationId){return new Promise(function(resolve,reject){var index=findAnnotation(documentId,annotationId);if(index>-1){var annotations=_getAnnotations(documentId);annotations.splice(index,1);updateAnnotations(documentId,annotations);}resolve(true);});},getComments:function getComments(documentId,annotationId){return new Promise(function(resolve,reject){resolve(_getAnnotations(documentId).filter(function(i){return i.class==='Comment'&&i.annotation===annotationId;}));});},addComment:function addComment(documentId,annotationId,content){return new Promise(function(resolve,reject){var comment={class:'Comment',uuid:(0,_uuid2.default)(),annotation:annotationId,content:content};var annotations=_getAnnotations(documentId);annotations.push(comment);updateAnnotations(documentId,annotations);resolve(comment);});},deleteComment:function deleteComment(documentId,commentId){return new Promise(function(resolve,reject){_getAnnotations(documentId);var index=-1;var annotations=_getAnnotations(documentId);for(var i=0,l=annotations.length;i<l;i++){if(annotations[i].uuid===commentId){index=i;break;}}if(index>-1){annotations.splice(index,1);updateAnnotations(documentId,annotations);}resolve(true);});}}));}return LocalStoreAdapter;}(_StoreAdapter3.default);exports.default=LocalStoreAdapter;function _getAnnotations(documentId){return JSON.parse(localStorage.getItem('my_annotations'))||[];}function updateAnnotations(documentId,annotations){localStorage.setItem('my_annotations',JSON.stringify(annotations));}function findAnnotation(documentId,annotationId){var index=-1;var annotations=_getAnnotations(documentId);for(var i=0,l=annotations.length;i<l;i++){if(annotations[i].uuid===annotationId){index=i;break;}}return index;}module.exports=exports['default'];/***/},/* 9 *//***/function(module,exports){'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.default=uuid;var REGEXP=/[xy]/g;var PATTERN='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';function replacement(c){var r=Math.random()*16|0;var v=c=='x'?r:r&0x3|0x8;return v.toString(16);}/**
 			* Generate a univierally unique identifier
 			*
 			* @return {String}
@@ -2505,11 +2512,5 @@ function index(fileName) {
 
 	/***/ }
 	/******/ ]);
-
-
-		document.getElementById('download-button').addEventListener('click', function() {
-			var rr = 4;
-		});
-
 
 }

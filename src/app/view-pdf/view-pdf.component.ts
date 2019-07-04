@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 declare var index: any;
 declare var jsPDF: any;
@@ -20,8 +20,11 @@ export class ViewPdfComponent implements OnInit, OnChanges {
     // index(this.file);
   }
 
-  ngOnChanges(a: any) {
-    index(this.file);
+  ngOnChanges(changes: SimpleChanges) {
+    // reset annotations.
+    localStorage.removeItem('my_annotations');
+    // load new file
+    index(this.file, /*is first time*/ !changes.file.previousValue);
   }
 
   downloadPdf() {
