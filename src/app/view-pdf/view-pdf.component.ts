@@ -24,7 +24,7 @@ export class ViewPdfComponent implements OnInit, OnChanges {
     // reset annotations.
     localStorage.removeItem('my_annotations');
     // load new file
-    index(this.file, /*is first time*/ !changes.file.previousValue);
+    index(this.file, /*is first render*/ !changes.file.previousValue);
   }
 
   downloadPdf() {
