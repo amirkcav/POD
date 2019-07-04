@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 
 declare var index: any;
 declare var jsPDF: any;
@@ -11,12 +11,17 @@ declare var html2pdf: any;
   templateUrl: './view-pdf.component.html',
   styleUrls: ['./view-pdf.component.css']
 })
-export class ViewPdfComponent implements OnInit {
+export class ViewPdfComponent implements OnInit, OnChanges {
+  @Input() file: any;
 
   constructor() { }
 
   ngOnInit() {
-    index();
+    // index(this.file);
+  }
+
+  ngOnChanges(a: any) {
+    index(this.file);
   }
 
   downloadPdf() {

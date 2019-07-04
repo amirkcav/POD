@@ -1,8 +1,20 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
+<div id="top-div" [ngClass]="{'pdf-loaded': pdfLoaded}">
+  <h2>
+    Select PDF file
+  </h2>
+
+  <form id="file-form">
+      <div class="form-group">
+        <!-- <label for="pdf-file">File</label> -->
+        <input type="file" id="pdf-file" (change)="onFileChange($event)">
+        <!-- <button type="button" class="btn btn-sm btn-default" (click)="clearFile()">clear file</button> -->
+      </div>
+      <!-- <button type="submit"class="btn btn-success">Submit</button> -->
+    </form>
+
 </div>
 
-<app-view-pdf></app-view-pdf>
+<div id="pdf-wrapper">
+  <app-view-pdf *ngIf="file" [file]="file"></app-view-pdf>
+</div>

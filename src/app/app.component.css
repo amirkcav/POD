@@ -1,0 +1,26 @@
+#pdf-wrapper {
+  width: 900px;
+  margin: 0 auto;
+}
+
+#file-form {
+  text-align: center;
+}
+
+#file-form .form-group {
+  display: inline-block;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: #aaa 0 0 5px;
+}
+
+#top-div {
+  text-align: center;
+  margin-top: 100px;
+}
+
+#top-div.pdf-loaded {
+  margin-top: unset;
+  margin: 25px 0;
+}

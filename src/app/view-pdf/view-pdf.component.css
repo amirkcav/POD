@@ -1,0 +1,13 @@
+#main-wrapper {
+  border: 1px solid #888;
+}
+
+.toolbar {
+  position: relative;
+  text-align: center;
+}
+
+#content-wrapper {
+  position: static;
+}
+
